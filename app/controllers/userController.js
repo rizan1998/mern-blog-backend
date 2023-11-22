@@ -118,9 +118,10 @@ const udpateProfilePicture = async (req, res, next) => {
     const upload = uploadPicture.single("profilePicture");
     upload(req, res, async function (err) {
       if (err) {
-        const error = new Error("An known error occured when uploading ")
+        const error = new Error("An known error occured when uploading ");
+        next();
       }
-    };)
+    });
   } catch (error) {}
 };
 
