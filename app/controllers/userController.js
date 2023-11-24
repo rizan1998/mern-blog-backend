@@ -1,5 +1,6 @@
 import { uploadPicture } from "../middleware/uploadPirctureMiddleware";
 import User from "../models/User";
+import { fileRemover } from "../utils/fileRemover";
 
 const registerUser = async (req, res, next) => {
   try {
@@ -113,16 +114,56 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-const udpateProfilePicture = async (req, res, next) => {
+const updateProfilePicture = async (req, res, next) => {
   try {
     const upload = uploadPicture.single("profilePicture");
+
     upload(req, res, async function (err) {
       if (err) {
-        const error = new Error("An known error occured when uploading ");
-        next();
+        const error = new Error("An unknown error occured when uploading " + err.message);
+        next(error);
+      } else {
+        // every thing went well
+        if (req.file) {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          if (filename) {
+            fileRemover(filename);
+          }
+          updatedUser.avatar = req.file.filename;
+          await updatedUser.save();
+          res.json({
+            _id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        } else {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          updatedUser.avatar = "";
+          await updatedUser.save();
+          fileRemover(filename);
+          res.json({
+            _id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        }
       }
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
-export { registerUser, loginUser, userProfile, updateProfile, udpateProfilePicture };
+export { registerUser, loginUser, userProfile, updateProfile, updateProfilePicture };
