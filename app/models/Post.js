@@ -19,8 +19,8 @@ const PostSchema = new Schema(
 PostSchema.virtual("comments", {
   ref: "Comment",
   localField: "_id",
-  foreignField: "postId",
+  foreignField: "post",
 });
 
-const User = model("Post", PostSchema);
-export default User;
+const Post = model("Post", PostSchema);
+export default Post;
