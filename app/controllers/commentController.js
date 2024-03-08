@@ -15,6 +15,7 @@ const createComment = async (req, res, next) => {
       user: req.user._id,
       desc,
       post: post._id,
+      parent,
       replyOnUser,
     });
 

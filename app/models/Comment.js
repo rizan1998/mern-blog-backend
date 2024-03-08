@@ -6,7 +6,7 @@ const CommentSchema = new Schema(
     desc: { type: String, required: true },
     post: { type: Schema.Types.ObjectId, ref: "Post", required: true },
     check: { type: Boolean, default: false },
-    patient: {
+    parent: {
       type: Schema.Types.ObjectId,
       ref: "Comment",
       default: null,
@@ -17,7 +17,7 @@ const CommentSchema = new Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 );
 
 CommentSchema.virtual("replies", {

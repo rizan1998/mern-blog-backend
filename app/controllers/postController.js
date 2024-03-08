@@ -109,6 +109,18 @@ const getPost = async (req, res, next) => {
           check: true,
           parent: null,
         },
+        populate: [
+          {
+            path: "user",
+            select: ["avatar", "name"],
+          },
+          {
+            path: "replies",
+            match: {
+              check: true,
+            },
+          },
+        ],
       },
     ]);
     if (!post) {
